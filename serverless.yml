@@ -1,0 +1,15 @@
+service: visitor-count-api
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: python3.9
+
+functions:
+  api:
+    handler: app.handler
+    events:
+      - httpApi: "*"
+
+plugins:
+  - serverless-python-requirements
