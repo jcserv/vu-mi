@@ -8,10 +8,13 @@ from typing import Dict
 router = APIRouter()
 
 REGION=os.environ.get("AWS_REGION")
+QUEUE_URL=os.environ.get("QUEUE_URL")
 VIEW_COUNTS_TABLE_NAME=os.environ.get("VIEW_COUNTS_TABLE_NAME")
 
 dynamodb = boto3.resource('dynamodb', region_name=REGION)
 table = dynamodb.Table(VIEW_COUNTS_TABLE_NAME)
+
+sqs = boto3.client('sqs', region_name=REGION)
 
 class ViewCountResponse(BaseModel):
     schemaVersion: int
@@ -19,18 +22,20 @@ class ViewCountResponse(BaseModel):
     message: str
     color: str
 
-@router.get("/{userId}", response_model=ViewCountResponse)
-async def get_view_count(userId: str) -> Dict[str, str]:
+@router.get("/{user_id}", response_model=ViewCountResponse)
+async def get_view_count(user_id: str) -> Dict[str, str]:
     try:
         response = table.query(
-            KeyConditionExpression=Key('PK').eq(userId)
+            KeyConditionExpression=Key('PK').eq(user_id)
         )
         items = response.get('Items', [])
 
-        if not items:
-            raise HTTPException(status_code=404, detail="User not found")
-        user_data = items[0]
-        view_count = user_data.get('view_count', 0)
+        view_count = 0
+        if len(items) > 0 :
+            user_data = items[0]
+            view_count = user_data.get('view_count', 0)
+
+        send_message_sqs(user_id)
 
         return {
             "schemaVersion": 1,
@@ -42,3 +47,16 @@ async def get_view_count(userId: str) -> Dict[str, str]:
         raise e  # Re-raise the HTTPException so it retains its status code
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+def send_message_sqs(user_id: str):
+    try:
+        message = {
+            'userId': user_id
+        }
+        
+        response = sqs.send_message(
+            QueueUrl=QUEUE_URL,
+            MessageBody=str(message)
+        )    
+    except Exception as e:
+        print(f"Error sending message to SQS: {str(e)}")
