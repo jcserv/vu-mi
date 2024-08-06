@@ -42,10 +42,13 @@ def initialize_user(user_id):
         print(f"Error initializing user {user_id}: {str(e)}")
 
 def put_view(user_id):
+    curr_time = datetime.now(timezone.utc)
+    five_minutes_in_seconds = (5 * 60) - (now.minute % 5) * 60 - now.second
     try:
         item = {
             "PK": user_id,
-            "SK": f'VIEW#{datetime.now(timezone.utc).isoformat()}',
+            "SK": f'VIEW#{curr_time.isoformat()}',
+            "ttl": int((curr_time + timedelta(seconds=seconds_to_add)).timestamp()),
         }
         response = table.put_item(
             Item=item,
