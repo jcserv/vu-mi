@@ -5,7 +5,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from typing import Dict
 
-router = APIRouter(prefix="/view-counts")
+router = APIRouter(prefix="/views")
 
 REGION=os.environ.get("AWS_REGION")
 QUEUE_URL=os.environ.get("QUEUE_URL")
