@@ -23,7 +23,7 @@ class ViewCountResponse(BaseModel):
     color: str
 
 @router.get("/{user_id}", response_model=ViewCountResponse)
-async def get_view_count(user_id: str) -> Dict[str, str]:
+async def get_views(user_id: str) -> Dict[str, str]:
     try:
         response = table.query(
             KeyConditionExpression=Key('PK').eq(user_id),
