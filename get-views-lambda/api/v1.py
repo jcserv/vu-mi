@@ -22,11 +22,11 @@ class ViewCountResponse(BaseModel):
     message: str
     color: str
 
-@router.get("/{user_id}", response_model=ViewCountResponse)
-async def get_views(user_id: str) -> Dict[str, str]:
+@router.get("", response_model=ViewCountResponse)
+async def get_views(id: str) -> Dict[str, str]:
     try:
         response = table.query(
-            KeyConditionExpression=Key('PK').eq(user_id),
+            KeyConditionExpression=Key('PK').eq(id),
             Limit=250,
             ConsistentRead=True,
         )
@@ -37,7 +37,7 @@ async def get_views(user_id: str) -> Dict[str, str]:
             user_data = items[0]
             view_count = user_data.get('count', 0) + len(items) - 1
 
-        send_message_sqs(user_id, view_count)
+        send_message_sqs(id, view_count)
 
         return {
             "schemaVersion": 1,
