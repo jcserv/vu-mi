@@ -16,17 +16,15 @@ def lambda_handler(event: events.SQSEvent, context: context_.Context) -> None:
         process_message(convert_str_to_json(message["body"]))
 
 def process_message(body: dict):
+    user_id = body.get('userId', '')
+    count = body.get('count', 0)
     try:
-        user_id = body.get('userId', '')
-        count = body.get('count', 0)
-
         if count == 0:
             initialize_user(user_id)
         put_view(user_id)
 
     except Exception as err:
-        print("An error occurred")
-        raise err
+        print(f"Unable to process message for user {user_id}: {err}")
 
 def initialize_user(user_id):
     try:
@@ -40,6 +38,7 @@ def initialize_user(user_id):
         )
     except Exception as e:
         print(f"Error initializing user {user_id}: {str(e)}")
+        raise e
 
 def put_view(user_id):
     curr_time = datetime.now(timezone.utc)
@@ -55,6 +54,7 @@ def put_view(user_id):
         )
     except Exception as e:
         print(f"Error putting view for {user_id}: {str(e)}")
+        raise e
 
 def convert_str_to_json(s: str) -> dict:
     s = s.replace("'", '"')
