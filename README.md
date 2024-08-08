@@ -21,6 +21,8 @@ To use this in a Markdown document, simply paste the following, and insert your 
 ![visitors](https://img.shields.io/endpoint?url=https://vu-mi.com/api/v1/views?id=<INSERT_UNIQUE_ID_HERE>)
 ```
 
+![visitors](https://img.shields.io/endpoint?url=https://vu-mi.com/api/v1/views?id=jcserv/vu-mi)
+
 The ID could be your Github username, Github repo, anything you want really.
 
 ## API

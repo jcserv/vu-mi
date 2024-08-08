@@ -34,12 +34,13 @@ def lambda_handler(event: events.DynamoDBStreamEvent, context: context_.Context)
                     "SK": "USER",
                 }
             )
-
+            print(response)
             current_total = 0
             if "Item" in response:
                 current_total = response["Item"]["count"]
+                print(current_total)
 
-            item = {"PK": user_id, "SK": "USER", "COUNT": int(current_total) + total}
+            item = {"PK": user_id, "SK": "USER", "count": int(current_total) + total}
 
             table.put_item(
                 Item=item,
