@@ -16,7 +16,7 @@ build/deps: install
 	cd dependencies && zip ../aws_lambda_artifact.zip -r .
 
 compile: build/deps
-	zip aws_lambda_artifact.zip -u main.py -r api/
+	zip aws_lambda_artifact.zip -u lambda_function.py
 
-upload: compile
+upload:
 	aws lambda update-function-code --function-name "${LAMBDA_FUNCTION_NAME}" --zip-file "fileb://aws_lambda_artifact.zip" --region "${AWS_REGION}"
