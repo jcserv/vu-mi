@@ -10,7 +10,7 @@ It is tremendously over-engineered, using the following technologies:
 - DynamoDB Streams
 - SQS
 
-I implemented it to implement concepts I've learned about, but never worked with such as:
+I did it to implement concepts I've learned about, but never worked with such as:
 - Modelling one-to-many relationships in a DynamoDB single table design (from [The DynamoDB Book](https://dynamodbbook.com/), by Alex Debrie)
 - Change Data Capture
 
@@ -57,7 +57,7 @@ Response:
 4. If the provided count is 0, PUT the USER item
 > Q: Is there a risk of race conditions here when multiple requests come in for a new user?
 
-A: Nope! At worst, there's repeated PUTs that are not necessary, but thanks to the way we've modelled it, there's no collisions.
+A: There is, if the message to the `put-views-lambda` comes after a `batch-update-count-lambda` invocation, it can override the count to 0.
 
 5. Put VIEW item, with TTL rounded to the next 5 min interval
 
