@@ -35,6 +35,7 @@ def initialize_user(user_id):
         }
         response = table.put_item(
             Item=item,
+            # only insert if the user item has not been initialized already
             ConditionExpression="attribute_not_exists(PK) AND attribute_not_exists(SK)",
         )
     except Exception as e:
