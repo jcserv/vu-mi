@@ -1,7 +1,7 @@
 # vu-mi
 
 vu-mi is a public API to enable view count badges in Markdown. 
-The API returns up-to-date counts, up to {prevComputedCount} + 249. Any more than that, and it will show a stale count.
+The API returns up-to-date counts, up to {prevComputedCount} + 7999. Any more than that, and it will show a stale count.
 
 
 It is tremendously over-engineered, using the following technologies:
@@ -47,7 +47,7 @@ Response:
 
 `<get-views-lambda>`
 1. `GET /v1/api/views?id=jcserv` request comes into `get-views-lambda`
-2. `get-views-lambda` queries Dynamo for all items with matching PK, limit of 250
+2. `get-views-lambda` queries Dynamo for all items with matching PK, limit of 8000
 3.  a. Send SQS message with user id & count
 
     b. Return response with count - 1 (minus one to account for the USER item)
@@ -58,6 +58,7 @@ Response:
 > Q: Is there a risk of race conditions here when multiple requests come in for a new user?
 
 A: There is, if the message to the `put-views-lambda` comes after a `batch-update-count-lambda` invocation, it can override the count to 0.
+To circumvent this, we only PUT the user item IFF the user object does not already exist ("attribute_not_exists(PK) AND attribute_not_exists(SK)")
 
 5. Put VIEW item, with TTL rounded to the next 5 min interval
 
