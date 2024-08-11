@@ -35,6 +35,7 @@ def initialize_user(user_id):
         }
         response = table.put_item(
             Item=item,
+            ConditionExpression="attribute_not_exists(PK) AND attribute_not_exists(SK)",
         )
     except Exception as e:
         print(f"Error initializing user {user_id}: {str(e)}")
