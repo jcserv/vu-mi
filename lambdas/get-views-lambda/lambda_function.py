@@ -20,7 +20,7 @@ def lambda_handler(event: Dict, context: context_.Context):
     try:
         response = table.query(
             KeyConditionExpression=Key("PK").eq(user_id),
-            Limit=250,
+            Limit=8000,
             ConsistentRead=True,
         )
         items = response.get("Items", [])
